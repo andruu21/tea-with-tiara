@@ -226,8 +226,8 @@ crayon_line(d, [(rx + 22 * S, ry + 110 * S), (rx + 22 * S, ry + 140 * S)], (90, 
 d.rectangle([rx - 38 * S, ry + 138 * S, rx - 6 * S, ry + 152 * S], fill=(90, 110, 190))
 d.rectangle([rx + 6 * S, ry + 138 * S, rx + 38 * S, ry + 152 * S], fill=(90, 110, 190))
 
-# --- crayon hearts ---------------------------------------------------------------
-for (hhx, hhy, hs) in [(int(0.36 * WBig), dy0 - 20 * S, 12), (int(0.62 * WBig), dy0 - 34 * S, 10)]:
+# --- crayon hearts (kept clear of all text) -----------------------------------
+for (hhx, hhy, hs) in [(int(0.15 * WBig), dy0 - 22 * S, 12), (int(0.70 * WBig), dy0 - 12 * S, 10)]:
     d.ellipse([hhx - hs * S, hhy - hs * S, hhx, hhy + hs * S], fill=(228, 108, 108))
     d.ellipse([hhx, hhy - hs * S, hhx + hs * S, hhy + hs * S], fill=(228, 108, 108))
     d.polygon([(hhx - hs * S, hhy + hs * 0.4 * S), (hhx + hs * S, hhy + hs * 0.4 * S),
