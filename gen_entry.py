@@ -227,7 +227,7 @@ d.rectangle([rx - 38 * S, ry + 138 * S, rx - 6 * S, ry + 152 * S], fill=(90, 110
 d.rectangle([rx + 6 * S, ry + 138 * S, rx + 38 * S, ry + 152 * S], fill=(90, 110, 190))
 
 # --- crayon hearts (kept clear of all text) -----------------------------------
-for (hhx, hhy, hs) in [(int(0.15 * WBig), dy0 - 22 * S, 12), (int(0.70 * WBig), dy0 - 12 * S, 10)]:
+for (hhx, hhy, hs) in [(int(0.115 * WBig), dy0 - 46 * S, 12), (int(0.70 * WBig), dy0 + 30 * S, 10)]:
     d.ellipse([hhx - hs * S, hhy - hs * S, hhx, hhy + hs * S], fill=(228, 108, 108))
     d.ellipse([hhx, hhy - hs * S, hhx + hs * S, hhy + hs * S], fill=(228, 108, 108))
     d.polygon([(hhx - hs * S, hhy + hs * 0.4 * S), (hhx + hs * S, hhy + hs * 0.4 * S),
