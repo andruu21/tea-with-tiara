@@ -87,7 +87,7 @@ for gx in (0.18, 0.5, 0.82):
            fill=(214, 164, 118), width=3 * S)
 
 # --- Mimi the mouse, standing on the table, holding the cake up -----------
-m_cx, m_cy = 0.71 * W, 0.585 * H          # body center
+m_cx, m_cy = 0.79 * W, 0.585 * H          # body center
 d.ellipse(scaled(m_cx - 0.085 * W, m_cy - 0.085 * W,
                  m_cx + 0.085 * W, m_cy + 0.085 * W), fill=(178, 148, 138))
 # ears: big round with pink inner
