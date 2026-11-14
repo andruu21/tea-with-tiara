@@ -1,8 +1,8 @@
-"""ai-happy-01 v6: 'We did not eat the cherry' — June, the robot, and the cake.
+"""ai-happy-01 v8: Biscuit the bear knits the judge a scarf.
 
-Variant 3: crayon kid-drawing beneath the letter (rank-3 formula).
-Features mined from top entries: funnier specific copy, crayon texture,
-yellow highlight on the name, scribble grass, taped-to-fridge scene.
+Variant 4: the scarf physically pours off the letter and wraps around
+Biscuit's neck — the trick the 0.938 top entry used. Craft base from
+the winning v6/v7 family: hand lettering, grain, golden light, vignette.
 """
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import math
@@ -12,56 +12,60 @@ import random
 S = 4
 W = H = 1024
 WBig, HBig = W * S, H * S
-rng = random.Random(42)
+rng = random.Random(21)
 
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-
-
-def crayon_line(d, pts, color, width, wobble=2.0):
-    """Draw a waxy crayon stroke: several offset semi-transparent passes."""
-    for k in range(3):
-        offs = [(rng.uniform(-wobble, wobble) * S,
-                 rng.uniform(-wobble, wobble) * S) for _ in pts]
-        shade = tuple(min(255, int(c * (0.9 + 0.07 * k))) for c in color)
-        w = max(1, int(width * S * (0.75 + 0.15 * k)))
-        d.line([(x + offs[i][0], y + offs[i][1]) for i, (x, y) in enumerate(pts)],
-               fill=shade, width=w, joint="curve")
-
 
 img = Image.new("RGB", (WBig, HBig))
 d = ImageDraw.Draw(img)
 
-# --- fridge door background: warm off-white with subtle shading -------------
-top = (238, 230, 220)
-bot = (222, 212, 198)
+# --- wall: warm wood-panel gradient ----------------------------------------
+top = (238, 206, 168)
+bot = (222, 186, 146)
 for y in range(HBig):
     t = y / (HBig - 1)
     c = tuple(int(top[i] + (bot[i] - top[i]) * t) for i in range(3))
     d.line([(0, y), (WBig, y)], fill=c)
-for _ in range(5200):
-    px = rng.randint(0, WBig - 1)
-    py = rng.randint(0, HBig - 1)
-    g = rng.randint(-8, 8)
-    d.point((px, py), fill=(234 + g, 226 + g, 214 + g))
+for x in range(0, WBig, int(0.125 * WBig)):
+    d.line([(x, 0), (x, HBig)], fill=(230, 196, 158), width=2 * S)
 
-# --- big letter paper --------------------------------------------------------
-pw, ph = int(0.84 * W) * S, int(0.88 * H) * S
-paper = Image.new("RGBA", (pw, ph), (0, 0, 0, 0))
+# --- golden radial light ----------------------------------------------------
+light = Image.new("L", (WBig, HBig), 0)
+ld = ImageDraw.Draw(light)
+cx, cy = int(0.5 * WBig), int(0.02 * HBig)
+for r in range(int(1.2 * WBig), 0, -12):
+    a = int(80 * (1 - r / (1.2 * WBig)) ** 1.7)
+    ld.ellipse([cx - r, cy - r, cx + r, cy + r], fill=a)
+glow = Image.new("RGB", (WBig, HBig), (255, 232, 190))
+img = Image.composite(glow, img, light)
+d = ImageDraw.Draw(img)
+
+# --- floor ------------------------------------------------------------------
+floor_y = int(0.82 * HBig)
+d.rectangle([0, floor_y, WBig, HBig], fill=(188, 140, 100))
+d.rectangle([0, floor_y, WBig, floor_y + 8 * S], fill=(162, 118, 82))
+
+# --- lined letter paper, tilted ---------------------------------------------
+paper = Image.new("RGBA", (int(0.60 * W) * S, int(0.50 * H) * S), (0, 0, 0, 0))
 pd = ImageDraw.Draw(paper)
-pd.rounded_rectangle([0, 0, pw - 1, ph - 1], radius=14 * S, fill=(252, 247, 236),
-                     outline=(210, 190, 162), width=3 * S)
-for _ in range(4000):
-    px = rng.randint(4, pw - 5)
-    py = rng.randint(4, ph - 5)
-    g = rng.randint(232, 246)
-    pd.point((px, py), fill=(g, g, int(g * 0.98), 255))
-for j in range(1, 8):
-    ly = int(j * ph * 0.42 / 8)
-    pd.line([(70 * S, ly), (pw - 70 * S, ly)], fill=(224, 204, 178), width=2 * S)
+pd.rounded_rectangle([0, 0, paper.width - 1, paper.height - 1],
+                     radius=12 * S, fill=(255, 251, 240),
+                     outline=(214, 188, 152), width=3 * S)
+for _ in range(2600):
+    px = rng.randint(4, paper.width - 5)
+    py = rng.randint(4, paper.height - 5)
+    g = rng.randint(228, 244)
+    pd.point((px, py), fill=(g, g, int(g * 0.97), 255))
+for j in range(1, 11):
+    ly = int(j * paper.height / 12)
+    pd.line([(26 * S, ly), (paper.width - 26 * S, ly)], fill=(222, 202, 176), width=2 * S)
+for (tx0, ty0, ang) in [(18, 14, -25), (paper.width - 130, 12, 20)]:
+    tape = Image.new("RGBA", (120 * S, 34 * S), (250, 226, 160, 215))
+    tape = tape.rotate(ang, expand=True)
+    paper.alpha_composite(tape, (tx0 * S, ty0 * S))
 
 
-def hand_text(draw_layer, xy, text, size, fill=(58, 62, 130)):
-    """Handwritten-look text, blue pen ink."""
+def hand_text(draw_layer, xy, text, size, fill=(70, 52, 46)):
     x, y = xy
     f = ImageFont.truetype(FONT_PATH, size)
     wob = max(3, size // 12)
@@ -73,7 +77,7 @@ def hand_text(draw_layer, xy, text, size, fill=(58, 62, 130)):
         jx = rng.randint(-wob, wob)
         jy = rng.randint(-wob, wob) + int(base_y - y) + rng.randint(-2, 2)
         y += rng.uniform(-0.9, 0.9) * size / 40
-        rot = rng.uniform(-4.5, 4.5)
+        rot = rng.uniform(-5.0, 5.0)
         pad = size // 2 + 8
         cw = int(size * 0.72) + 2 * pad
         chh = size + 2 * pad
@@ -82,164 +86,171 @@ def hand_text(draw_layer, xy, text, size, fill=(58, 62, 130)):
         td.text((pad, pad), ch, font=f, fill=fill + (255,))
         tile = tile.rotate(rot, resample=Image.BICUBIC, center=(cw / 2, chh / 2))
         draw_layer.alpha_composite(tile, (int(x) + jx, int(y) + jy))
-        x += f.getlength(ch) + size * 0.012
+        x += f.getlength(ch) + size * 0.015
     return x
 
 
-ink = (58, 62, 130)
-tx, ty = 90 * S, 40 * S
-lh = int(52 * S)
-hand_text(paper, (tx, ty), "Dear Judge,", 52 * S, ink)
-hand_text(paper, (tx, ty + lh), "we saved you the last", 40 * S, ink)
-hand_text(paper, (tx, ty + 2 * lh), "slice of cake.", 40 * S, ink)
-hand_text(paper, (tx, ty + 3 * lh), "it has the cherry.", 40 * S, ink)
-hand_text(paper, (tx, ty + 4 * lh), "we did not eat it.", 40 * S, ink)
-hand_text(paper, (tx, ty + 5 * lh), "that was VERY hard.", 40 * S, ink)
-hand_text(paper, (tx, ty + 6 * lh), "(the robot cried a", 40 * S, ink)
-hand_text(paper, (tx, ty + 7 * lh), "little. ok, a lot.)", 40 * S, ink)
-sx, sy = tx, ty + 9 * lh
-f_sig = ImageFont.truetype(FONT_PATH, 42 * S)
-sig = "Love, June and the robot"
-hl = ImageDraw.Draw(paper)
-hl.rectangle([sx - 8 * S, sy + 8 * S, sx + f_sig.getlength(sig) + 14 * S, sy + 52 * S],
-             fill=(255, 236, 130, 220))
-hand_text(paper, (sx, sy), sig, 42 * S, ink)
-hand_text(paper, (tx, ty + 11 * lh), "p.s. the cherry is the best one.", 30 * S, (90, 96, 150))
+ink = (72, 54, 48)
+ink_soft = (100, 78, 66)
+tx, ty = 88 * S, 44 * S
+lh = int(34 * S)
+hand_text(paper, (tx, ty), "Dear Judge,", 30 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + lh), "i knitted you a scarf.", 21 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + 2 * lh), "i did not know your", 21 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + 3 * lh), "size, so it is very", 21 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + 4 * lh), "very long. wear it", 21 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + 5 * lh), "while you judge. you", 21 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + 6 * lh), "have to stay warm.", 21 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + 8 * lh), "Love, Biscuit", 22 * S, ink)
+hand_text(paper, (tx + 12 * S, ty + 10 * lh), "p.s. there is soup.", 16 * S, ink_soft)
 
-paper = paper.rotate(-1.2, resample=Image.BICUBIC, expand=True)
-px0, py0 = int(0.075 * WBig), int(0.05 * HBig)
+paper = paper.rotate(-2.0, resample=Image.BICUBIC, expand=True)
+px0, py0 = int(0.04 * WBig), int(0.05 * HBig)
 shadow = Image.new("RGBA", (paper.width + 60 * S, paper.height + 60 * S), (0, 0, 0, 0))
 sd = ImageDraw.Draw(shadow)
 sd.rounded_rectangle([40 * S, 40 * S, shadow.width - 20 * S, shadow.height - 20 * S],
-                     radius=16 * S, fill=(80, 55, 30, 70))
-shadow = shadow.filter(ImageFilter.GaussianBlur(7 * S))
+                     radius=14 * S, fill=(90, 60, 30, 60))
+shadow = shadow.filter(ImageFilter.GaussianBlur(6 * S))
 img.paste(Image.new("RGB", shadow.size, (0, 0, 0)), (px0, py0), shadow.split()[3])
 img.paste(paper.convert("RGB"), (px0, py0), paper.split()[3])
 d = ImageDraw.Draw(img)
 
-for (tpx, tpy, ang) in [(int(0.10 * WBig), int(0.07 * HBig), -28),
-                        (int(0.86 * WBig), int(0.06 * HBig), 24),
-                        (int(0.10 * WBig), int(0.88 * HBig), 22),
-                        (int(0.86 * WBig), int(0.89 * HBig), -20)]:
-    tape = Image.new("RGBA", (150 * S, 40 * S), (246, 224, 160, 200))
-    tape = tape.rotate(ang, expand=True)
-    img.paste(tape, (tpx, tpy), tape)
+# --- scarf: knitted red band pouring off the paper onto Biscuit's neck -------
+sx0 = int(0.56 * WBig)
+sy0 = int(0.44 * HBig)
+scarf_h = int(0.10 * HBig)
+bear_neck_x = int(0.795 * WBig)
+bear_neck_y = int(0.585 * HBig)
+pts_top, pts_bot = [], []
+seg = 26
+for i in range(seg + 1):
+    t = i / seg
+    x = sx0 + t * (bear_neck_x - sx0)
+    sway = math.sin(t * math.pi) * 40 * S
+    ytop = sy0 + sway + t * (bear_neck_y - sy0 - scarf_h / 2 - 40 * S)
+    pts_top.append((x, ytop))
+    pts_bot.append((x, ytop + scarf_h))
+poly = pts_top + pts_bot[::-1]
+d.polygon(poly, fill=(210, 70, 66))
+for i in range(seg):
+    if i % 2 == 0:
+        continue
+    d.polygon([pts_top[i], pts_top[i + 1], pts_bot[i + 1], pts_bot[i]], fill=(240, 232, 220))
+for i in range(0, seg, 2):
+    d.line([pts_top[i], pts_bot[i]], fill=(184, 56, 54), width=int(2 * S))
+fx, fy = pts_bot[-1][0], (pts_top[-1][1] + pts_bot[-1][1]) / 2
+for k in range(-2, 3):
+    d.line([(fx + k * 12 * S, fy + scarf_h / 2), (fx + k * 14 * S, fy + scarf_h / 2 + 50 * S)],
+           fill=(210, 70, 66), width=int(6 * S))
+
+# --- crayon card pinned next to the scarf ------------------------------------
+card = Image.new("RGBA", (int(0.26 * W) * S, int(0.24 * H) * S), (0, 0, 0, 0))
+cd = ImageDraw.Draw(card)
+cd.rounded_rectangle([0, 0, card.width - 1, card.height - 1], radius=10 * S,
+                     fill=(253, 248, 238), outline=(216, 190, 154), width=3 * S)
+bcx, bcy = card.width // 2, int(card.height * 0.52)
+br = int(card.width * 0.22)
+cd.ellipse([bcx - br, bcy - br, bcx + br, bcy + br], outline=(120, 88, 70), width=int(4 * S))
+for ex in (-1, 1):
+    exx = bcx + ex * int(br * 0.85)
+    eyy = bcy - int(br * 0.9)
+    er = int(br * 0.42)
+    cd.ellipse([exx - er, eyy - er, exx + er, eyy + er], outline=(120, 88, 70), width=int(4 * S))
+cd.rounded_rectangle([bcx - int(br * 0.95), bcy + int(br * 0.35),
+                      bcx + int(br * 0.95), bcy + int(br * 0.75)],
+                     radius=8 * S, fill=(210, 70, 66))
+cd.line([(bcx, bcy + int(br * 0.75)), (bcx + 20 * S, bcy + int(br * 1.35))],
+        fill=(210, 70, 66), width=int(14 * S))
+for ex in (-1, 1):
+    e1 = bcx + ex * int(br * 0.42)
+    cd.ellipse([e1 - 8 * S, bcy - int(br * 0.35) - 8 * S,
+                e1 + 8 * S, bcy - int(br * 0.35) + 8 * S], fill=(72, 54, 48))
+cd.arc([bcx - 22 * S, bcy + int(br * 0.05), bcx + 22 * S, bcy + int(br * 0.45)],
+       start=15, end=165, fill=(72, 54, 48), width=int(4 * S))
+for (hhx, hhy, hr_) in [(int(card.width * 0.16), int(card.height * 0.18), 12),
+                        (int(card.width * 0.84), int(card.height * 0.2), 10)]:
+    cd.ellipse([hhx - hr_ * S, hhy - hr_ * S, hhx, hhy + hr_ * S], fill=(226, 96, 92))
+    cd.ellipse([hhx, hhy - hr_ * S, hhx + hr_ * S, hhy + hr_ * S], fill=(226, 96, 92))
+    cd.polygon([(hhx - hr_ * S, hhy + hr_ * 0.5 * S), (hhx + hr_ * S, hhy + hr_ * 0.5 * S),
+                (hhx, hhy + hr_ * 1.6 * S)], fill=(226, 96, 92))
+card = card.rotate(2.0, resample=Image.BICUBIC, expand=True)
+cx0, cy0 = int(0.68 * WBig), int(0.16 * HBig)
+img.paste(card.convert("RGB"), (cx0, cy0), card.split()[3])
 d = ImageDraw.Draw(img)
+d.ellipse([cx0 + card.width // 2 - 6 * S, cy0 - 8 * S, cx0 + card.width // 2 + 6 * S, cy0 + 4 * S],
+          fill=(180, 60, 56))
 
-# --- crayon drawing area (lower part of the paper) ---------------------------
-dy0 = int(0.635 * HBig)
-dcx = int(0.47 * WBig)
+# --- yarn ball + needles on the shelf (and a cup of soup) --------------------
+yx, yy = int(0.16 * WBig), int(0.93 * HBig)
+d.ellipse([yx - 70 * S, yy - 70 * S, yx + 70 * S, yy + 50 * S], fill=(226, 96, 92))
+d.arc([yx - 54 * S, yy - 56 * S, yx + 54 * S, yy + 36 * S], start=200, end=340,
+      fill=(196, 74, 72), width=int(6 * S))
+d.arc([yx - 34 * S, yy - 46 * S, yx + 58 * S, yy + 26 * S], start=150, end=260,
+      fill=(196, 74, 72), width=int(5 * S))
+d.line([(yx + 48 * S, yy + 24 * S), (yx + 170 * S, yy - 80 * S)], fill=(196, 164, 120), width=int(7 * S))
+d.line([(yx + 34 * S, yy + 30 * S), (yx + 170 * S, yy - 46 * S)], fill=(196, 164, 120), width=int(7 * S))
+for (nx, ny) in [(yx + 170 * S, yy - 80 * S), (yx + 170 * S, yy - 46 * S)]:
+    d.ellipse([nx - 10 * S, ny - 10 * S, nx + 10 * S, ny + 10 * S], fill=(180, 146, 104))
+# steamy soup mug mid-floor
+mugx, mugy = int(0.44 * WBig), int(0.93 * HBig)
+d.rounded_rectangle([mugx - 55 * S, mugy - 60 * S, mugx + 55 * S, mugy + 30 * S],
+                    radius=10 * S, fill=(244, 232, 214), outline=(200, 170, 140), width=int(3 * S))
+d.ellipse([mugx - 42 * S, mugy - 55 * S, mugx + 42 * S, mugy - 25 * S], fill=(226, 148, 84))
+d.arc([mugx + 52 * S, mugy - 45 * S, mugx + 92 * S, mugy + 5 * S], start=270, end=90,
+      fill=(244, 232, 214), width=int(10 * S))
+for i, sxx in enumerate((-20, 0, 20)):
+    d.arc([mugx + sxx * S - 10 * S, mugy - 120 * S + i * 8 * S,
+           mugx + sxx * S + 10 * S, mugy - 80 * S + i * 8 * S],
+          start=90, end=270, fill=(255, 244, 226), width=int(4 * S))
 
-# scribble grass (inside the paper's lower band only)
-for _ in range(60):
-    gx = dcx + rng.randint(-320, 320) * S
-    gy = dy0 + int(0.27 * HBig) + rng.randint(-14, 16) * S
-    crayon_line(d, [(gx, gy), (gx + rng.randint(-6, 6) * S, gy - rng.randint(12, 24) * S)],
-                rng.choice([(96, 158, 84), (120, 178, 100), (76, 140, 70)]),
-                width=3, wobble=1.5)
-
-# crayon sun (moved clear of the text, small)
-scx, scy = int(0.78 * WBig), dy0 + 44 * S
-d.ellipse([scx - 26 * S, scy - 26 * S, scx + 26 * S, scy + 26 * S], outline=(238, 168, 60), width=int(4 * S))
-d.arc([scx - 20 * S, scy - 18 * S, scx + 10 * S, scy + 12 * S], start=200, end=330, fill=(210, 140, 50), width=int(3 * S))
-d.arc([scx - 6 * S, scy - 18 * S, scx + 24 * S, scy + 12 * S], start=210, end=330, fill=(210, 140, 50), width=int(3 * S))
-for a in range(0, 360, 45):
-    r1, r2 = 32 * S, 44 * S
-    d.line([(scx + r1 * math.cos(math.radians(a)), scy + r1 * math.sin(math.radians(a))),
-            (scx + r2 * math.cos(math.radians(a)), scy + r2 * math.sin(math.radians(a)))],
-           fill=(238, 168, 60), width=int(3 * S))
-
-# --- the cake: chunky chocolate slice with cherry ----------------------------
-ckx, cky = dcx + 10 * S, dy0 + int(0.155 * HBig)
-crayon_line(d, [(ckx - 110 * S, cky + 95 * S), (ckx - 44 * S, cky + 116 * S),
-                (ckx + 66 * S, cky + 116 * S), (ckx + 124 * S, cky + 94 * S)],
-            (110, 130, 210), width=4)
-crayon_line(d, [(ckx - 96 * S, cky + 87 * S), (ckx + 110 * S, cky + 87 * S)],
-            (110, 130, 210), width=3)
-crayon_line(d, [(ckx - 88 * S, cky + 88 * S), (ckx - 74 * S, cky - 8 * S),
-                (ckx + 80 * S, cky - 8 * S), (ckx + 88 * S, cky + 88 * S)],
-            (110, 72, 46), width=5)
-for ly in range(0, 4):
-    yy = cky + ly * 25 * S
-    crayon_line(d, [(ckx - 82 * S + ly * 4 * S, yy), (ckx + 84 * S - ly * 4 * S, yy)],
-                (110, 72, 46), width=3)
-crayon_line(d, [(ckx - 74 * S, cky - 8 * S), (ckx - 68 * S, cky - 25 * S),
-                (ckx - 30 * S, cky - 30 * S), (ckx + 8 * S, cky - 22 * S),
-                (ckx + 44 * S, cky - 31 * S), (ckx + 80 * S, cky - 9 * S)],
-            (150, 96, 60), width=5)
-chx, chy = ckx + 42 * S, cky - 55 * S
-d.ellipse([chx - 16 * S, chy - 16 * S, chx + 16 * S, chy + 16 * S], fill=(214, 62, 64))
-d.ellipse([chx - 9 * S, chy - 10 * S, chx - 1 * S, chy - 3 * S], fill=(238, 120, 120))
-crayon_line(d, [(chx, chy - 16 * S), (chx + 10 * S, chy - 37 * S)], (110, 76, 48), width=3)
-
-# --- June, the kid, on the left (smaller, fits the band) ----------------------
-gx, gy = dcx - 215 * S, dy0 + int(0.20 * HBig)
-d.polygon([(gx - 40 * S, gy + 95 * S), (gx + 40 * S, gy + 95 * S),
-           (gx + 22 * S, gy + 8 * S), (gx - 22 * S, gy + 8 * S)],
-          fill=(240, 168, 190))
-crayon_line(d, [(gx - 40 * S, gy + 95 * S), (gx + 40 * S, gy + 95 * S)], (214, 120, 150), width=4)
-crayon_line(d, [(gx + 22 * S, gy + 8 * S), (gx - 22 * S, gy + 8 * S)], (214, 120, 150), width=3)
-d.ellipse([gx - 32 * S, gy - 44 * S, gx + 32 * S, gy + 18 * S], fill=(250, 224, 200))
-crayon_line(d, [(gx - 32 * S, gy - 44 * S), (gx + 32 * S, gy - 44 * S)], (200, 150, 120), width=3)
+# --- Biscuit the bear, lower right -------------------------------------------
+mx, my = int(0.80 * WBig), floor_y
+body = Image.new("RGBA", (int(0.30 * W) * S, int(0.36 * H) * S), (0, 0, 0, 0))
+bd = ImageDraw.Draw(body)
+bw, bh = body.size
+c_lo = (150, 116, 92)
+c_hi = (172, 140, 114)
+for i in range(bh):
+    t = i / bh
+    c = tuple(int(c_lo[k] + (c_hi[k] - c_lo[k]) * t) for k in range(3))
+    bd.line([(0, i), (bw, i)], fill=c)
+mask = Image.new("L", (bw, bh), 0)
+md = ImageDraw.Draw(mask)
+md.ellipse([bw // 2 - int(bw * 0.30), int(bh * 0.40), bw // 2 + int(bw * 0.30), bh - 1], fill=255)
+img.paste(body.convert("RGB"), (mx - bw // 2, my - bh), mask)
+d = ImageDraw.Draw(img)
 for sx in (-1, 1):
-    px_ = gx + sx * 35 * S
-    d.ellipse([px_ - 15 * S, gy - 43 * S, px_ + 15 * S, gy - 13 * S], fill=(240, 196, 90))
-    d.ellipse([px_ - 9 * S, gy - 46 * S, px_ + 9 * S, gy - 37 * S], fill=(230, 90, 110))
+    fx = mx + sx * int(0.05 * WBig)
+    d.ellipse([fx - 18 * S, my - 22 * S, fx + 18 * S, my + 4 * S], fill=(142, 110, 88))
+hx, hy = mx, my - int(0.30 * HBig)
+hr = int(0.075 * WBig)
+d.ellipse([hx - hr, hy - hr, hx + hr, hy + hr], fill=(164, 130, 104))
 for sx in (-1, 1):
-    d.ellipse([gx + sx * 12 * S - 4 * S, gy - 25 * S, gx + sx * 12 * S + 4 * S, gy - 17 * S],
-              fill=(60, 50, 46))
-for fx in (-18, -7, 9, 19):
-    d.ellipse([gx + fx * S - 2 * S, gy - 12 * S, gx + fx * S + 2 * S, gy - 8 * S],
-              fill=(226, 150, 130))
-d.arc([gx - 12 * S, gy - 9 * S, gx + 12 * S, gy + 9 * S], start=15, end=165,
-      fill=(190, 90, 90), width=int(3 * S))
-crayon_line(d, [(gx - 20 * S, gy + 22 * S), (gx - 52 * S, gy + 48 * S)], (250, 224, 200), width=6)
-crayon_line(d, [(gx + 20 * S, gy + 22 * S), (gx + 66 * S, gy + 15 * S)], (250, 224, 200), width=6)
-crayon_line(d, [(gx - 13 * S, gy + 95 * S), (gx - 16 * S, gy + 117 * S)], (250, 224, 200), width=6)
-crayon_line(d, [(gx + 13 * S, gy + 95 * S), (gx + 16 * S, gy + 117 * S)], (250, 224, 200), width=6)
-d.ellipse([gx - 25 * S, gy + 114 * S, gx - 6 * S, gy + 126 * S], fill=(210, 70, 90))
-d.ellipse([gx + 8 * S, gy + 114 * S, gx + 27 * S, gy + 126 * S], fill=(210, 70, 90))
-
-# --- the robot, on the right (smaller, fits the band) --------------------------
-rx, ry = dcx + 225 * S, dy0 + int(0.145 * HBig)
-crayon_line(d, [(rx, ry - 66 * S), (rx, ry - 88 * S)], (90, 110, 190), width=4)
-for a in range(0, 360, 72):
-    rr = 9 * S
-    d.line([(rx, ry - 94 * S), (rx + rr * math.cos(math.radians(a)), ry - 94 * S + rr * math.sin(math.radians(a)))],
-           fill=(238, 168, 60), width=int(3 * S))
-d.rounded_rectangle([rx - 38 * S, ry - 66 * S, rx + 38 * S, ry - 8 * S], radius=8 * S,
-                    fill=(196, 214, 238), outline=(90, 110, 190), width=int(4 * S))
+    ex = hx + sx * int(hr * 0.85)
+    ey = hy - int(hr * 0.82)
+    er = int(hr * 0.42)
+    d.ellipse([ex - er, ey - er, ex + er, ey + er], fill=(164, 130, 104))
+    d.ellipse([ex - int(er * 0.5), ey - int(er * 0.5), ex + int(er * 0.5), ey + int(er * 0.5)],
+              fill=(226, 196, 172))
+d.ellipse([hx - int(hr * 0.5), hy - int(hr * 0.18), hx + int(hr * 0.5), hy + int(hr * 0.5)],
+          fill=(232, 208, 186))
 for sx in (-1, 1):
-    ex = rx + sx * 17 * S
-    d.ellipse([ex - 6 * S, ry - 46 * S, ex + 6 * S, ry - 33 * S], fill=(60, 50, 46))
-    d.ellipse([ex - 3 * S, ry - 43 * S, ex + 3 * S, ry - 37 * S], fill=(240, 240, 240))
-d.arc([rx - 15 * S, ry - 30 * S, rx + 15 * S, ry - 13 * S], start=15, end=165,
-      fill=(90, 110, 190), width=int(3 * S))
-d.rounded_rectangle([rx - 30 * S, ry - 3 * S, rx + 30 * S, ry + 80 * S], radius=6 * S,
-                    fill=(210, 224, 244), outline=(90, 110, 190), width=int(4 * S))
-d.ellipse([rx - 10 * S, ry + 22 * S, rx + 10 * S, ry + 42 * S], fill=(240, 168, 90))
-d.rectangle([rx - 7 * S, ry + 58 * S, rx + 7 * S, ry + 69 * S], fill=(240, 210, 100))
-crayon_line(d, [(rx - 30 * S, ry + 12 * S), (rx - 62 * S, ry - 15 * S)], (196, 214, 238), width=6)
-crayon_line(d, [(rx + 30 * S, ry + 12 * S), (rx + 62 * S, ry - 15 * S)], (196, 214, 238), width=6)
-crayon_line(d, [(rx - 16 * S, ry + 80 * S), (rx - 16 * S, ry + 102 * S)], (90, 110, 190), width=6)
-crayon_line(d, [(rx + 16 * S, ry + 80 * S), (rx + 16 * S, ry + 102 * S)], (90, 110, 190), width=6)
-d.rectangle([rx - 28 * S, ry + 100 * S, rx - 4 * S, ry + 111 * S], fill=(90, 110, 190))
-d.rectangle([rx + 4 * S, ry + 100 * S, rx + 28 * S, ry + 111 * S], fill=(90, 110, 190))
+    exy = hx + sx * int(hr * 0.38)
+    eyy = hy - int(hr * 0.22)
+    d.arc([exy - 14 * S, eyy - 14 * S, exy + 14 * S, eyy + 14 * S],
+          start=200, end=340, fill=(60, 44, 40), width=int(3 * S))
+d.ellipse([hx - 9 * S, hy + int(hr * 0.10), hx + 9 * S, hy + int(hr * 0.28)], fill=(70, 52, 46))
+d.arc([hx - 20 * S, hy + int(hr * 0.05), hx + 20 * S, hy + int(hr * 0.5)],
+      start=20, end=160, fill=(70, 52, 46), width=int(3 * S))
+# (the scarf band already wraps Biscuit's neck)
 
-# --- crayon hearts (kept clear of all text) -----------------------------------
-for (hhx, hhy, hs) in [(int(0.115 * WBig), dy0 - 40 * S, 12), (int(0.335 * WBig), dy0 - 58 * S, 9)]:
-    d.ellipse([hhx - hs * S, hhy - hs * S, hhx, hhy + hs * S], fill=(228, 108, 108))
-    d.ellipse([hhx, hhy - hs * S, hhx + hs * S, hhy + hs * S], fill=(228, 108, 108))
-    d.polygon([(hhx - hs * S, hhy + hs * 0.4 * S), (hhx + hs * S, hhy + hs * 0.4 * S),
-               (hhx, hhy + hs * 1.6 * S)], fill=(228, 108, 108))
-
-# --- warm fridge-door vignette ----------------------------------------------------
+# --- vignette ----------------------------------------------------------------
 vig = Image.new("L", (WBig, HBig), 0)
 vd = ImageDraw.Draw(vig)
-vd.ellipse([-int(0.3 * WBig), -int(0.3 * HBig), WBig + int(0.3 * WBig), HBig + int(0.3 * HBig)], fill=255)
-vig = vig.filter(ImageFilter.GaussianBlur(140 * S))
-warm = Image.new("RGB", (WBig, HBig), (238, 214, 186))
-img = Image.composite(img, warm, vig)
+vd.ellipse([-int(0.25 * WBig), -int(0.25 * HBig), WBig + int(0.25 * WBig), HBig + int(0.25 * HBig)], fill=255)
+vig = vig.filter(ImageFilter.GaussianBlur(120 * S))
+dark = Image.new("RGB", (WBig, HBig), (120, 84, 60))
+img = Image.composite(img, dark, vig)
 
 final = img.resize((W, H), Image.LANCZOS)
 out = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
