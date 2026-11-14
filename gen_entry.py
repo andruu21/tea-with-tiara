@@ -254,6 +254,14 @@ vig = vig.filter(ImageFilter.GaussianBlur(120 * S))
 dark = Image.new("RGB", (WBig, HBig), (120, 84, 60))
 img = Image.composite(img, dark, vig)
 
+# --- warm window-light beam from upper right ----------------------------------
+beam = Image.new("L", (WBig, HBig), 0)
+bd = ImageDraw.Draw(beam)
+bd.polygon([(WBig, 0), (int(0.55 * WBig), 0), (WBig, int(0.75 * HBig))], fill=70)
+beam = beam.filter(ImageFilter.GaussianBlur(90 * S))
+warm = Image.new("RGB", (WBig, HBig), (255, 210, 150))
+img = Image.composite(warm, img, beam)
+
 final = img.resize((W, H), Image.LANCZOS)
 out = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
 os.makedirs(out, exist_ok=True)
