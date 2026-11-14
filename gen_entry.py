@@ -93,18 +93,18 @@ hand_text(paper, (tx, ty), "Dear Judge,", 52 * S, ink)
 hand_text(paper, (tx, ty + lh), "we saved you the last", 40 * S, ink)
 hand_text(paper, (tx, ty + 2 * lh), "slice of cake.", 40 * S, ink)
 hand_text(paper, (tx, ty + 3 * lh), "it has the cherry.", 40 * S, ink)
-hand_text(paper, (tx, ty + 4 * lh), "we did not eat the", 40 * S, ink)
-hand_text(paper, (tx, ty + 5 * lh), "cherry.", 40 * S, ink)
-hand_text(paper, (tx, ty + 6 * lh), "that was very hard.", 40 * S, ink)
-sx, sy = tx, ty + 8 * lh
+hand_text(paper, (tx, ty + 4 * lh), "we did not eat it.", 40 * S, ink)
+hand_text(paper, (tx, ty + 5 * lh), "that was VERY hard.", 40 * S, ink)
+hand_text(paper, (tx, ty + 6 * lh), "(the robot cried a", 40 * S, ink)
+hand_text(paper, (tx, ty + 7 * lh), "little. ok, a lot.)", 40 * S, ink)
+sx, sy = tx, ty + 9 * lh
 f_sig = ImageFont.truetype(FONT_PATH, 42 * S)
 sig = "Love, June and the robot"
 hl = ImageDraw.Draw(paper)
 hl.rectangle([sx - 8 * S, sy + 8 * S, sx + f_sig.getlength(sig) + 14 * S, sy + 52 * S],
              fill=(255, 236, 130, 220))
 hand_text(paper, (sx, sy), sig, 42 * S, ink)
-hand_text(paper, (tx, ty + 10 * lh), "p.s. the plate is licked clean.", 30 * S, (90, 96, 150))
-hand_text(paper, (tx, ty + 11 * lh), "that was the robot.", 30 * S, (90, 96, 150))
+hand_text(paper, (tx, ty + 11 * lh), "p.s. the cherry is the best one.", 30 * S, (90, 96, 150))
 
 paper = paper.rotate(-1.2, resample=Image.BICUBIC, expand=True)
 px0, py0 = int(0.075 * WBig), int(0.05 * HBig)
@@ -127,14 +127,14 @@ for (tpx, tpy, ang) in [(int(0.10 * WBig), int(0.07 * HBig), -28),
 d = ImageDraw.Draw(img)
 
 # --- crayon drawing area (lower part of the paper) ---------------------------
-dy0 = int(0.565 * HBig)
+dy0 = int(0.635 * HBig)
 dcx = int(0.47 * WBig)
 
-# scribble grass
-for _ in range(90):
-    gx = dcx + rng.randint(-330, 330) * S
-    gy = dy0 + int(0.40 * HBig) + rng.randint(-20, 24) * S
-    crayon_line(d, [(gx, gy), (gx + rng.randint(-6, 6) * S, gy - rng.randint(14, 30) * S)],
+# scribble grass (inside the paper's lower band only)
+for _ in range(60):
+    gx = dcx + rng.randint(-320, 320) * S
+    gy = dy0 + int(0.27 * HBig) + rng.randint(-14, 16) * S
+    crayon_line(d, [(gx, gy), (gx + rng.randint(-6, 6) * S, gy - rng.randint(12, 24) * S)],
                 rng.choice([(96, 158, 84), (120, 178, 100), (76, 140, 70)]),
                 width=3, wobble=1.5)
 
@@ -150,84 +150,84 @@ for a in range(0, 360, 45):
            fill=(238, 168, 60), width=int(3 * S))
 
 # --- the cake: chunky chocolate slice with cherry ----------------------------
-ckx, cky = dcx + 20 * S, dy0 + int(0.22 * HBig)
-crayon_line(d, [(ckx - 150 * S, cky + 130 * S), (ckx - 60 * S, cky + 158 * S),
-                (ckx + 90 * S, cky + 158 * S), (ckx + 170 * S, cky + 128 * S)],
-            (110, 130, 210), width=5)
-crayon_line(d, [(ckx - 130 * S, cky + 118 * S), (ckx + 150 * S, cky + 118 * S)],
+ckx, cky = dcx + 10 * S, dy0 + int(0.155 * HBig)
+crayon_line(d, [(ckx - 110 * S, cky + 95 * S), (ckx - 44 * S, cky + 116 * S),
+                (ckx + 66 * S, cky + 116 * S), (ckx + 124 * S, cky + 94 * S)],
             (110, 130, 210), width=4)
-crayon_line(d, [(ckx - 120 * S, cky + 120 * S), (ckx - 100 * S, cky - 10 * S),
-                (ckx + 110 * S, cky - 10 * S), (ckx + 120 * S, cky + 120 * S)],
-            (110, 72, 46), width=6)
+crayon_line(d, [(ckx - 96 * S, cky + 87 * S), (ckx + 110 * S, cky + 87 * S)],
+            (110, 130, 210), width=3)
+crayon_line(d, [(ckx - 88 * S, cky + 88 * S), (ckx - 74 * S, cky - 8 * S),
+                (ckx + 80 * S, cky - 8 * S), (ckx + 88 * S, cky + 88 * S)],
+            (110, 72, 46), width=5)
 for ly in range(0, 4):
-    yy = cky + ly * 34 * S
-    crayon_line(d, [(ckx - 112 * S + ly * 5 * S, yy), (ckx + 114 * S - ly * 5 * S, yy)],
-                (110, 72, 46), width=4)
-crayon_line(d, [(ckx - 100 * S, cky - 10 * S), (ckx - 92 * S, cky - 34 * S),
-                (ckx - 40 * S, cky - 40 * S), (ckx + 10 * S, cky - 30 * S),
-                (ckx + 60 * S, cky - 42 * S), (ckx + 110 * S, cky - 12 * S)],
-            (150, 96, 60), width=6)
-chx, chy = ckx + 60 * S, cky - 74 * S
-d.ellipse([chx - 22 * S, chy - 22 * S, chx + 22 * S, chy + 22 * S], fill=(214, 62, 64))
-d.ellipse([chx - 12 * S, chy - 14 * S, chx - 2 * S, chy - 4 * S], fill=(238, 120, 120))
-crayon_line(d, [(chx, chy - 22 * S), (chx + 14 * S, chy - 50 * S)], (110, 76, 48), width=4)
+    yy = cky + ly * 25 * S
+    crayon_line(d, [(ckx - 82 * S + ly * 4 * S, yy), (ckx + 84 * S - ly * 4 * S, yy)],
+                (110, 72, 46), width=3)
+crayon_line(d, [(ckx - 74 * S, cky - 8 * S), (ckx - 68 * S, cky - 25 * S),
+                (ckx - 30 * S, cky - 30 * S), (ckx + 8 * S, cky - 22 * S),
+                (ckx + 44 * S, cky - 31 * S), (ckx + 80 * S, cky - 9 * S)],
+            (150, 96, 60), width=5)
+chx, chy = ckx + 42 * S, cky - 55 * S
+d.ellipse([chx - 16 * S, chy - 16 * S, chx + 16 * S, chy + 16 * S], fill=(214, 62, 64))
+d.ellipse([chx - 9 * S, chy - 10 * S, chx - 1 * S, chy - 3 * S], fill=(238, 120, 120))
+crayon_line(d, [(chx, chy - 16 * S), (chx + 10 * S, chy - 37 * S)], (110, 76, 48), width=3)
 
-# --- June, the kid, on the left ----------------------------------------------
-gx, gy = dcx - 250 * S, dy0 + int(0.30 * HBig)
-d.polygon([(gx - 55 * S, gy + 130 * S), (gx + 55 * S, gy + 130 * S),
-           (gx + 30 * S, gy + 10 * S), (gx - 30 * S, gy + 10 * S)],
+# --- June, the kid, on the left (smaller, fits the band) ----------------------
+gx, gy = dcx - 215 * S, dy0 + int(0.20 * HBig)
+d.polygon([(gx - 40 * S, gy + 95 * S), (gx + 40 * S, gy + 95 * S),
+           (gx + 22 * S, gy + 8 * S), (gx - 22 * S, gy + 8 * S)],
           fill=(240, 168, 190))
-crayon_line(d, [(gx - 55 * S, gy + 130 * S), (gx + 55 * S, gy + 130 * S)], (214, 120, 150), width=5)
-crayon_line(d, [(gx + 30 * S, gy + 10 * S), (gx - 30 * S, gy + 10 * S)], (214, 120, 150), width=4)
-d.ellipse([gx - 42 * S, gy - 60 * S, gx + 42 * S, gy + 24 * S], fill=(250, 224, 200))
-crayon_line(d, [(gx - 42 * S, gy - 60 * S), (gx + 42 * S, gy - 60 * S)], (200, 150, 120), width=4)
+crayon_line(d, [(gx - 40 * S, gy + 95 * S), (gx + 40 * S, gy + 95 * S)], (214, 120, 150), width=4)
+crayon_line(d, [(gx + 22 * S, gy + 8 * S), (gx - 22 * S, gy + 8 * S)], (214, 120, 150), width=3)
+d.ellipse([gx - 32 * S, gy - 44 * S, gx + 32 * S, gy + 18 * S], fill=(250, 224, 200))
+crayon_line(d, [(gx - 32 * S, gy - 44 * S), (gx + 32 * S, gy - 44 * S)], (200, 150, 120), width=3)
 for sx in (-1, 1):
-    px_ = gx + sx * 46 * S
-    d.ellipse([px_ - 20 * S, gy - 58 * S, px_ + 20 * S, gy - 18 * S], fill=(240, 196, 90))
-    d.ellipse([px_ - 12 * S, gy - 62 * S, px_ + 12 * S, gy - 50 * S], fill=(230, 90, 110))
+    px_ = gx + sx * 35 * S
+    d.ellipse([px_ - 15 * S, gy - 43 * S, px_ + 15 * S, gy - 13 * S], fill=(240, 196, 90))
+    d.ellipse([px_ - 9 * S, gy - 46 * S, px_ + 9 * S, gy - 37 * S], fill=(230, 90, 110))
 for sx in (-1, 1):
-    d.ellipse([gx + sx * 16 * S - 5 * S, gy - 34 * S, gx + sx * 16 * S + 5 * S, gy - 24 * S],
+    d.ellipse([gx + sx * 12 * S - 4 * S, gy - 25 * S, gx + sx * 12 * S + 4 * S, gy - 17 * S],
               fill=(60, 50, 46))
-for fx in (-24, -10, 12, 26):
-    d.ellipse([gx + fx * S - 2 * S, gy - 16 * S, gx + fx * S + 2 * S, gy - 12 * S],
+for fx in (-18, -7, 9, 19):
+    d.ellipse([gx + fx * S - 2 * S, gy - 12 * S, gx + fx * S + 2 * S, gy - 8 * S],
               fill=(226, 150, 130))
-d.arc([gx - 16 * S, gy - 12 * S, gx + 16 * S, gy + 12 * S], start=15, end=165,
-      fill=(190, 90, 90), width=int(4 * S))
-crayon_line(d, [(gx - 26 * S, gy + 30 * S), (gx - 70 * S, gy + 66 * S)], (250, 224, 200), width=8)
-crayon_line(d, [(gx + 26 * S, gy + 30 * S), (gx + 90 * S, gy + 20 * S)], (250, 224, 200), width=8)
-crayon_line(d, [(gx - 18 * S, gy + 130 * S), (gx - 22 * S, gy + 160 * S)], (250, 224, 200), width=8)
-crayon_line(d, [(gx + 18 * S, gy + 130 * S), (gx + 22 * S, gy + 160 * S)], (250, 224, 200), width=8)
-d.ellipse([gx - 34 * S, gy + 156 * S, gx - 8 * S, gy + 172 * S], fill=(210, 70, 90))
-d.ellipse([gx + 10 * S, gy + 156 * S, gx + 36 * S, gy + 172 * S], fill=(210, 70, 90))
+d.arc([gx - 12 * S, gy - 9 * S, gx + 12 * S, gy + 9 * S], start=15, end=165,
+      fill=(190, 90, 90), width=int(3 * S))
+crayon_line(d, [(gx - 20 * S, gy + 22 * S), (gx - 52 * S, gy + 48 * S)], (250, 224, 200), width=6)
+crayon_line(d, [(gx + 20 * S, gy + 22 * S), (gx + 66 * S, gy + 15 * S)], (250, 224, 200), width=6)
+crayon_line(d, [(gx - 13 * S, gy + 95 * S), (gx - 16 * S, gy + 117 * S)], (250, 224, 200), width=6)
+crayon_line(d, [(gx + 13 * S, gy + 95 * S), (gx + 16 * S, gy + 117 * S)], (250, 224, 200), width=6)
+d.ellipse([gx - 25 * S, gy + 114 * S, gx - 6 * S, gy + 126 * S], fill=(210, 70, 90))
+d.ellipse([gx + 8 * S, gy + 114 * S, gx + 27 * S, gy + 126 * S], fill=(210, 70, 90))
 
-# --- the robot, on the right ---------------------------------------------------
-rx, ry = dcx + 280 * S, dy0 + int(0.26 * HBig)
-crayon_line(d, [(rx, ry - 90 * S), (rx, ry - 120 * S)], (90, 110, 190), width=5)
+# --- the robot, on the right (smaller, fits the band) --------------------------
+rx, ry = dcx + 225 * S, dy0 + int(0.145 * HBig)
+crayon_line(d, [(rx, ry - 66 * S), (rx, ry - 88 * S)], (90, 110, 190), width=4)
 for a in range(0, 360, 72):
-    rr = 12 * S
-    d.line([(rx, ry - 128 * S), (rx + rr * math.cos(math.radians(a)), ry - 128 * S + rr * math.sin(math.radians(a)))],
-           fill=(238, 168, 60), width=int(4 * S))
-d.rounded_rectangle([rx - 52 * S, ry - 90 * S, rx + 52 * S, ry - 10 * S], radius=10 * S,
-                    fill=(196, 214, 238), outline=(90, 110, 190), width=int(5 * S))
+    rr = 9 * S
+    d.line([(rx, ry - 94 * S), (rx + rr * math.cos(math.radians(a)), ry - 94 * S + rr * math.sin(math.radians(a)))],
+           fill=(238, 168, 60), width=int(3 * S))
+d.rounded_rectangle([rx - 38 * S, ry - 66 * S, rx + 38 * S, ry - 8 * S], radius=8 * S,
+                    fill=(196, 214, 238), outline=(90, 110, 190), width=int(4 * S))
 for sx in (-1, 1):
-    ex = rx + sx * 24 * S
-    d.ellipse([ex - 9 * S, ry - 62 * S, ex + 9 * S, ry - 44 * S], fill=(60, 50, 46))
-    d.ellipse([ex - 4 * S, ry - 58 * S, ex + 4 * S, ry - 50 * S], fill=(240, 240, 240))
-d.arc([rx - 20 * S, ry - 40 * S, rx + 20 * S, ry - 18 * S], start=15, end=165,
-      fill=(90, 110, 190), width=int(4 * S))
-d.rounded_rectangle([rx - 40 * S, ry - 4 * S, rx + 40 * S, ry + 110 * S], radius=8 * S,
-                    fill=(210, 224, 244), outline=(90, 110, 190), width=int(5 * S))
-d.ellipse([rx - 14 * S, ry + 30 * S, rx + 14 * S, ry + 58 * S], fill=(240, 168, 90))
-d.rectangle([rx - 10 * S, ry + 80 * S, rx + 10 * S, ry + 94 * S], fill=(240, 210, 100))
-crayon_line(d, [(rx - 40 * S, ry + 16 * S), (rx - 84 * S, ry - 20 * S)], (196, 214, 238), width=9)
-crayon_line(d, [(rx + 40 * S, ry + 16 * S), (rx + 84 * S, ry - 20 * S)], (196, 214, 238), width=9)
-crayon_line(d, [(rx - 22 * S, ry + 110 * S), (rx - 22 * S, ry + 140 * S)], (90, 110, 190), width=8)
-crayon_line(d, [(rx + 22 * S, ry + 110 * S), (rx + 22 * S, ry + 140 * S)], (90, 110, 190), width=8)
-d.rectangle([rx - 38 * S, ry + 138 * S, rx - 6 * S, ry + 152 * S], fill=(90, 110, 190))
-d.rectangle([rx + 6 * S, ry + 138 * S, rx + 38 * S, ry + 152 * S], fill=(90, 110, 190))
+    ex = rx + sx * 17 * S
+    d.ellipse([ex - 6 * S, ry - 46 * S, ex + 6 * S, ry - 33 * S], fill=(60, 50, 46))
+    d.ellipse([ex - 3 * S, ry - 43 * S, ex + 3 * S, ry - 37 * S], fill=(240, 240, 240))
+d.arc([rx - 15 * S, ry - 30 * S, rx + 15 * S, ry - 13 * S], start=15, end=165,
+      fill=(90, 110, 190), width=int(3 * S))
+d.rounded_rectangle([rx - 30 * S, ry - 3 * S, rx + 30 * S, ry + 80 * S], radius=6 * S,
+                    fill=(210, 224, 244), outline=(90, 110, 190), width=int(4 * S))
+d.ellipse([rx - 10 * S, ry + 22 * S, rx + 10 * S, ry + 42 * S], fill=(240, 168, 90))
+d.rectangle([rx - 7 * S, ry + 58 * S, rx + 7 * S, ry + 69 * S], fill=(240, 210, 100))
+crayon_line(d, [(rx - 30 * S, ry + 12 * S), (rx - 62 * S, ry - 15 * S)], (196, 214, 238), width=6)
+crayon_line(d, [(rx + 30 * S, ry + 12 * S), (rx + 62 * S, ry - 15 * S)], (196, 214, 238), width=6)
+crayon_line(d, [(rx - 16 * S, ry + 80 * S), (rx - 16 * S, ry + 102 * S)], (90, 110, 190), width=6)
+crayon_line(d, [(rx + 16 * S, ry + 80 * S), (rx + 16 * S, ry + 102 * S)], (90, 110, 190), width=6)
+d.rectangle([rx - 28 * S, ry + 100 * S, rx - 4 * S, ry + 111 * S], fill=(90, 110, 190))
+d.rectangle([rx + 4 * S, ry + 100 * S, rx + 28 * S, ry + 111 * S], fill=(90, 110, 190))
 
 # --- crayon hearts (kept clear of all text) -----------------------------------
-for (hhx, hhy, hs) in [(int(0.115 * WBig), dy0 - 46 * S, 12), (int(0.70 * WBig), dy0 + 30 * S, 10)]:
+for (hhx, hhy, hs) in [(int(0.115 * WBig), dy0 - 40 * S, 12), (int(0.35 * WBig), dy0 - 34 * S, 9)]:
     d.ellipse([hhx - hs * S, hhy - hs * S, hhx, hhy + hs * S], fill=(228, 108, 108))
     d.ellipse([hhx, hhy - hs * S, hhx + hs * S, hhy + hs * S], fill=(228, 108, 108))
     d.polygon([(hhx - hs * S, hhy + hs * 0.4 * S), (hhx + hs * S, hhy + hs * 0.4 * S),
