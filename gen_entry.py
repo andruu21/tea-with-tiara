@@ -195,6 +195,17 @@ for (nx, ny) in [(yx + 170 * S, yy - 80 * S), (yx + 170 * S, yy - 46 * S)]:
     d.ellipse([nx - 10 * S, ny - 10 * S, nx + 10 * S, ny + 10 * S], fill=(180, 146, 104))
 # steamy soup mug mid-floor
 mugx, mugy = int(0.44 * WBig), int(0.93 * HBig)
+# crayon "YOU ->" annotation pointing at Biscuit
+ayx, ayy = int(0.62 * WBig), int(0.62 * HBig)
+import random as _r
+_rr = _r.Random(7)
+for _seg in range(6):
+    x0 = ayx + _seg * 15 * S + _rr.randint(-2, 2) * S
+    y0 = ayy + _seg * 6 * S + _rr.randint(-2, 2) * S
+    d.line([(x0, y0), (x0 + 17 * S, y0 + 6 * S)], fill=(120, 60, 50), width=5 * S)
+you_tile = Image.new("RGBA", (200 * S, 60 * S), (0, 0, 0, 0))
+hand_text(you_tile, (0, 0), "YOU", 26 * S, (120, 60, 50))
+img.paste(you_tile.convert("RGB"), (ayx - 78 * S, ayy - 20 * S), you_tile.split()[3])
 d.rounded_rectangle([mugx - 55 * S, mugy - 60 * S, mugx + 55 * S, mugy + 30 * S],
                     radius=10 * S, fill=(244, 232, 214), outline=(200, 170, 140), width=int(3 * S))
 d.ellipse([mugx - 42 * S, mugy - 55 * S, mugx + 42 * S, mugy - 25 * S], fill=(226, 148, 84))
